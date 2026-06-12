@@ -50,6 +50,22 @@ uv run python preview_riser.py
 | `HEX_NUT_AF` | 10.0 mm | Hex nut across flats |
 | `HEX_NUT_LENGTH` | 17.0 mm | Hex nut total length |
 
+## Measurements
+
+| Item | Value |
+|---|---|
+| Bolt-to-bolt distance (target) | 55.00 mm (5.5 cm) |
+| Bolt-to-bolt distance (in model) | 54.97 mm |
+| Foot pad bounding | ~13 cm × 6 cm |
+| Trunk tilt — front-back | 8.3° |
+| Trunk tilt — side-to-side (crown) | 5.8° (magnitude; mirrored sign per side) |
+
+The 0.03 mm bolt-spacing artifact comes from `find_bolts.py:148-150`: the
+bolts are forced to share their average Y *after* the 5.5 cm distance
+constraint is applied, which shrinks the X-only span by a hair. Negligible
+for printing. To get exactly 55.00 mm, swap the order — collapse Y first,
+then rescale to 5.5 cm.
+
 Counterbore stack at each bolt position (top → bottom):
 
 1. Ø25.5 mm washer counterbore, 3.3 mm deep
