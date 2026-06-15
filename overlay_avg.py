@@ -37,8 +37,8 @@ def cm_to_image(pts_cm, centroid_px, px_per_cm):
 
 
 def main():
-    img1_path = "images/footing/PXL_20260326_221531091.jpg"
-    img2_path = "images/footing/PXL_20260326_221543814.jpg"
+    img1_path = "images/old/footing/PXL_20260326_221531091.jpg"
+    img2_path = "images/old/footing/PXL_20260326_221543814.jpg"
 
     foot1_px = load_smoothed("output/PXL_20260326_221531091_8points.json")
     foot2_px = load_smoothed("output/PXL_20260326_221543814_8points.json")

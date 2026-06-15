@@ -88,8 +88,8 @@ def bolts_to_cm(bolts_px, centroid_px, px_per_cm):
 
 
 def main():
-    img1 = "images/footing/PXL_20260326_221531091.jpg"
-    img2 = "images/footing/PXL_20260326_221543814.jpg"
+    img1 = "images/old/footing/PXL_20260326_221531091.jpg"
+    img2 = "images/old/footing/PXL_20260326_221543814.jpg"
 
     b1_px = detect_cyan_circles(img1)
     b2_px = detect_cyan_circles(img2)
@@ -125,11 +125,12 @@ def main():
     for i, b in enumerate(avg):
         print(f"  bolt {i}: x={b[0]:+.2f}  y={b[1]:+.2f}")
     avg_dist = float(np.linalg.norm(np.array(avg[0]) - np.array(avg[1])))
-    print(f"  bolt-to-bolt: {avg_dist:.2f} cm  (target: 5.5 cm)")
+    print(f"  bolt-to-bolt: {avg_dist:.2f} cm  (target: {5.7} cm)")
 
-    # Apply additional constraint: scale to exactly 5.5 cm bolt-to-bolt
+    # Apply additional constraint: scale to exactly 5.7 cm bolt-to-bolt
+    # (measured 62 mm OD-to-OD on the real spoiler, minus 5 mm stud diameter)
     # while keeping the midpoint fixed
-    target = 5.5
+    target = 5.7
     midpt = ((avg[0][0] + avg[1][0]) / 2.0, (avg[0][1] + avg[1][1]) / 2.0)
     if avg_dist > 0:
         scale_factor = target / avg_dist
@@ -141,7 +142,7 @@ def main():
     else:
         constrained = avg
 
-    print("\nConstrained to exactly 5.5 cm bolt-to-bolt (midpoint preserved):")
+    print(f"\nConstrained to exactly {target} cm bolt-to-bolt (midpoint preserved):")
     for i, b in enumerate(constrained):
         print(f"  bolt {i}: x={b[0]:+.2f}  y={b[1]:+.2f}")
 

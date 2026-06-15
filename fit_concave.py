@@ -11,7 +11,7 @@ from scipy.interpolate import splprep, splev
 
 
 def main():
-    img_path = "images/footing/PXL_20260326_221543814.jpg"
+    img_path = "images/old/footing/PXL_20260326_221543814.jpg"
     contour_path = "output/PXL_20260326_221543814_contour.json"
 
     img = cv2.imread(img_path)

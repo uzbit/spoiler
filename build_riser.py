@@ -16,7 +16,7 @@ import numpy as np
 import cadquery as cq
 
 # ---------- parameters (mm) ----------
-RISER_HEIGHT = 90.0            # mm, AVERAGE height (actual varies with tilt below)
+RISER_HEIGHT = 39.2            # mm, AVERAGE height (was 90; minus 2" = 50.8 mm)
 INNER_SCALE = 0.98             # apply 0.98 fit margin to the contour
 
 # Trunk lid tilt. +X end of the foot pad faces the front of the car (toward the
@@ -33,6 +33,15 @@ TILT_ANGLE_DEG = 8.3
 # producing the opposite-handed slope automatically.
 SIDE_TILT_DEG = 5.8
 
+# The photos give the contour and bolts in the orientation of the RIGHT foot of
+# the spoiler in CAD's +Y direction. The SIDE_TILT_DEG above was set up assuming
+# +Y = inboard for the LEFT foot, so the canonical's top didn't match its bottom
+# (printed test: riser.stl bottom matched the LEFT side of the car, but the top
+# matched the RIGHT foot of the spoiler). Flipping Y of the foot pad aligns the
+# top to the LEFT foot, making the canonical fully consistent as the LEFT-side
+# riser. Mirror across XZ then yields the RIGHT-side piece.
+FLIP_FOOT_Y = True
+
 # Hyperbolic waist
 WAIST_MIN_SCALE = 0.82         # narrowest cross-section (fraction of full)
 WAIST_K = 2.2                  # higher = flatter middle, sharper transition
@@ -40,7 +49,7 @@ NUM_LAYERS = 17                # cross-sections used for lofting
 
 # Stud clearance through-hole. The M5 stud (or threaded rod) passes the full
 # height of the riser from the spoiler foot pad above into the trunk lid below.
-STUD_CLEARANCE_DIA = 6.0       # mm, M5 (5mm thread) + 1mm slip clearance
+STUD_CLEARANCE_DIA = 7.0       # mm, M5 thread + 2mm clearance
 
 # Washer stack: 3 washers per bolt, sitting on TOP of the riser between the
 # riser's upper face and the spoiler foot pad above. Counterbore is cut from
@@ -54,20 +63,30 @@ WASHER_DEPTH_CLEARANCE = 0.3   # mm, added to depth so foot pad seats on the top
 
 COUNTERBORE_DIA = WASHER_OD + WASHER_DIA_CLEARANCE
 COUNTERBORE_DEPTH = NUM_WASHERS_PER_BOLT * WASHER_THICKNESS + WASHER_DEPTH_CLEARANCE
+# The locknut sits below the hex nut (inside the hex pocket's leeway space),
+# not in this wide washer counterbore — so it's not included here.
 
 # Hex nut pocket nested inside the washer counterbore (sits directly below it).
 # Sized so the hex nut slips in snugly — small AF clearance for print tolerance.
 HEX_NUT_AF = 10.0              # mm, across flats (measured)
-HEX_NUT_LENGTH = 17.0          # mm, total length (measured)
-HEX_AF_CLEARANCE = 0.3         # mm, added to AF for "somewhat snug" slip fit
+HEX_NUT_LENGTH = 17.7          # mm, total length (measured)
+HEX_AF_CLEARANCE = 0.5         # mm, pocket AF must stay under the bolt's 11.1 mm across-corners to prevent free rotation
 HEX_POCKET_AF = HEX_NUT_AF + HEX_AF_CLEARANCE
-HEX_POCKET_DEPTH = HEX_NUT_LENGTH + 10.0  # full nut length + 1 cm headroom
+
+# Hex pocket holds the hex nut stacked on top of the locknut directly beneath
+# it, plus a bit of headroom.
+LOCKNUT_THICKNESS = 2.0        # mm, measured
+HEX_POCKET_HEADROOM = 5.0      # mm, slack below the locknut
+HEX_POCKET_DEPTH = HEX_NUT_LENGTH + LOCKNUT_THICKNESS + HEX_POCKET_HEADROOM
 
 
 def load_avg_contour_mm():
     with open("output/foot_models_cm.json") as f:
         data = json.load(f)
     pts_cm = np.array(data["foot_avg_cm"], dtype=float)
+    if FLIP_FOOT_Y:
+        pts_cm[:, 1] = -pts_cm[:, 1]
+        pts_cm = pts_cm[::-1].copy()  # preserve loft winding direction
     return pts_cm * 10.0 * INNER_SCALE  # to mm + inset
 
 
@@ -75,6 +94,8 @@ def load_bolt_positions_mm():
     with open("output/bolt_positions.json") as f:
         data = json.load(f)
     bolts_cm = data["final_bolts_cm"]
+    if FLIP_FOOT_Y:
+        bolts_cm = [(x, -y) for (x, y) in bolts_cm]
     return [(float(x) * 10.0, float(y) * 10.0) for (x, y) in bolts_cm]
 
 
@@ -185,7 +206,8 @@ def main():
     print(f"Washer counterbore (top): dia={COUNTERBORE_DIA:.2f}mm  depth={COUNTERBORE_DEPTH:.2f}mm "
           f"(for {NUM_WASHERS_PER_BOLT} × {WASHER_THICKNESS}mm washers)")
     print(f"Hex pocket (below washers): {HEX_POCKET_AF:.2f}mm AF  depth={HEX_POCKET_DEPTH:.2f}mm "
-          f"(snug fit on {HEX_NUT_AF}mm hex nut, full {HEX_NUT_LENGTH}mm length + 10mm)")
+          f"(hex nut {HEX_NUT_LENGTH}mm + locknut {LOCKNUT_THICKNESS}mm + headroom {HEX_POCKET_HEADROOM}mm)")
+    print(f"Total cavity depth: {COUNTERBORE_DEPTH + HEX_POCKET_DEPTH:.1f}mm")
 
     riser = build_riser()
     cq.exporters.export(riser, "output/riser.stl")

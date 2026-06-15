@@ -7,7 +7,7 @@ import cv2
 
 
 def main():
-    img_path = "images/footing/PXL_20260326_221531091.jpg"
+    img_path = "images/old/footing/PXL_20260326_221531091.jpg"
     json_path = "output/PXL_20260326_221531091_8points.json"
 
     img = cv2.imread(img_path)

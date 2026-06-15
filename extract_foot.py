@@ -222,8 +222,8 @@ def extract_foot(image_path, output_dir="output"):
 
 if __name__ == "__main__":
     for img_path in [
-        "images/footing/PXL_20260326_221531091.jpg",
-        "images/footing/PXL_20260326_221543814.jpg",
+        "images/old/footing/PXL_20260326_221531091.jpg",
+        "images/old/footing/PXL_20260326_221543814.jpg",
     ]:
         print(f"\n{img_path}:")
         extract_foot(img_path)
