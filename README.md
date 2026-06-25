@@ -1,7 +1,7 @@
 # Spoiler Riser
 
 3D-printed riser that sits between an aftermarket spoiler and the trunk lid of
-a 2016 Subaru Crosstrek, lifting the spoiler ~3.9 cm while keeping it level on
+a 2016 Subaru Crosstrek, lifting the spoiler ~4.1 cm while keeping it level on
 the trunk's angled surface.
 
 Two pieces are produced per build — one per spoiler foot — that are mirror
@@ -40,9 +40,9 @@ uv run python preview_riser.py
 
 | Parameter | Default | Meaning |
 |---|---|---|
-| `RISER_HEIGHT` | 39.2 mm | Average riser height |
-| `TILT_ANGLE_DEG` | 8.3° | Front-back trunk slope (riser short at front) |
-| `SIDE_TILT_DEG` | 5.8° | Side-to-side trunk crown (riser short inboard) |
+| `RISER_HEIGHT` | 41.2 mm | Riser height at the foot center |
+| `TILT_ANGLE_DEG` | 8.3° | Front-back trunk slope (foot pad ~level fore-aft, so full slope) |
+| `SIDE_TILT_DEG` | 2.4° | Side-to-side riser wedge = trunk slope 5.9° − spoiler foot-pad cant 3.5° |
 | `FLIP_FOOT_Y` | `True` | Flip foot pad in Y so canonical = LEFT-side piece |
 | `STUD_CLEARANCE_DIA` | 7.0 mm | M5 stud through-hole |
 | `WASHER_OD` | 25.0 mm | Fender washer OD |
@@ -60,17 +60,24 @@ uv run python preview_riser.py
 |---|---|
 | Bolt-to-bolt distance | 57.00 mm (5.7 cm) — measured 62 mm OD-to-OD on the real spoiler minus 5 mm stud diameter |
 | Foot pad bounding | ~13 cm × 6 cm |
-| Trunk tilt — front-back | 8.3° |
-| Trunk tilt — side-to-side (crown) | 5.8° (magnitude; mirrored sign per side) |
+| Trunk tilt — front-back | 8.3° (left foot) / 7.8° (right) |
+| Trunk tilt — side-to-side | 5.9° (left) / 5.4° (right) |
+| Spoiler foot-pad cant — side | 3.5° (the pad isn't flat to the trunk) |
+| Riser side wedge (used) | 2.4° = trunk 5.9° − foot-pad 3.5° |
+
+The riser only needs the *difference* between the trunk slope and the spoiler's
+own foot-pad angle. Side-to-side the pad is canted ~3.5°, so the riser wedge is
+5.9° − 3.5° = 2.4° (building the full 5.9° floats the inboard edge ~4–5 mm).
+Fore-aft the pad is ~level, so the riser takes the full 8.3°.
 
 Counterbore stack at each bolt position (top → bottom):
 
-1. **Ø25.5 mm washer counterbore, 3.3 mm deep** (3 × 1 mm washers + 0.3 mm seat clearance)
+1. **Ø27.5 mm washer counterbore, 5.0 mm deep** (3 × 1 mm washers + 2.0 mm seat clearance)
 2. **10.5 mm AF hex pocket, 24.7 mm deep** (17.7 hex nut + 2 locknut + 5 headroom)
 3. **Ø7 mm stud clearance hole** continuing through to the bottom face
 
-Total cavity: 28.0 mm from the top face. At the front bolt (riser ~36 mm tall
-there) this leaves ~8 mm of bottom-wall material below the hex pocket.
+Total cavity: 29.7 mm from the top face. At the front bolt (riser ~37 mm tall
+there) this leaves ~7 mm of bottom-wall material below the hex pocket.
 
 ## Printing
 
