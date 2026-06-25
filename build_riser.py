@@ -16,22 +16,30 @@ import numpy as np
 import cadquery as cq
 
 # ---------- parameters (mm) ----------
-RISER_HEIGHT = 39.2            # mm, AVERAGE height (was 90; minus 2" = 50.8 mm)
+RISER_HEIGHT = 41.2            # mm, height at the foot CENTER. Bumped +2.0 from the
+                              # original 39.2 on 2026-06-25, paired with SIDE_TILT_DEG
+                              # below, to hold the outboard (-Y) edge at its correct
+                              # (seated) height while the reduced side tilt drops the
+                              # inboard (+Y) edge onto the trunk.
 INNER_SCALE = 0.98             # apply 0.98 fit margin to the contour
 
-# Trunk lid tilt. +X end of the foot pad faces the front of the car (toward the
-# roof, where the trunk surface is HIGH); -X faces the rear (where trunk is LOW).
-# The riser BOTTOM is tilted to match the trunk; the TOP stays horizontal so the
-# spoiler sits level. Net effect: riser is short at +X, tall at -X.
-# *** Guess from PXL_20260609_173925625.jpg — refine with a real measurement. ***
+# Trunk lid tilt (front<->rear of the car). MEASURED 2026-06-25 with a phone level
+# on the trunk at each foot: front-rear slope = 8.3° (left foot) / 7.8° (right).
+# Unlike the side axis, no foot-pad correction is needed here: the spoiler foot pad
+# is ~level fore-aft (its 8.9° upside-down reading was the aero shell's resting tilt
+# on the floor, not the pad), so riser front-rear = full trunk slope = 8.3°.
+# Canonical = LEFT foot. The riser BOTTOM is tilted to match; the TOP stays level.
 TILT_ANGLE_DEG = 8.3
 
-# Side-to-side tilt (across the foot pad's short axis). The trunk lid crowns at
-# the car's centerline, so each foot pad sits on a slight side slope: inboard
-# is HIGH, outboard is LOW. Canonical riser is built with +Y = inboard, so it's
-# SHORT at +Y and TALL at -Y. Mirroring across XZ flips Y for the other piece,
-# producing the opposite-handed slope automatically.
-SIDE_TILT_DEG = 5.8
+# Side-to-side tilt of the riser BOTTOM relative to its (level) TOP, across the
+# foot pad's short axis (inboard<->outboard). This is the riser WEDGE, NOT the raw
+# trunk slope: wedge = trunk_side_slope - spoiler_foot-pad_side_angle.
+# MEASURED 2026-06-25 (phone level): trunk side = 5.9° (left foot); spoiler foot-pad
+# side angle = 3.5° (spoiler upside down on the floor). So riser side = 5.9 - 3.5 = 2.4°.
+# This matches the prints: built at ~5.8° they over-tilted ~3.4° and floated the
+# inboard edge ~4 mm (eyeballed ~5 mm). Paired with RISER_HEIGHT above to hold the
+# outboard (-Y) seated edge; mirror across XZ makes the RIGHT piece.
+SIDE_TILT_DEG = 2.4
 
 # The photos give the contour and bolts in the orientation of the RIGHT foot of
 # the spoiler in CAD's +Y direction. The SIDE_TILT_DEG above was set up assuming
@@ -58,8 +66,9 @@ STUD_CLEARANCE_DIA = 7.0       # mm, M5 thread + 2mm clearance
 WASHER_OD = 25.0               # mm, measured
 WASHER_THICKNESS = 1.0         # mm, per washer (measured)
 NUM_WASHERS_PER_BOLT = 3
-WASHER_DIA_CLEARANCE = 0.5     # mm, added to OD for slip fit
-WASHER_DEPTH_CLEARANCE = 0.3   # mm, added to depth so foot pad seats on the top face of the riser
+WASHER_DIA_CLEARANCE = 2.5     # mm, added to OD (0.5 slip fit + 2.0 opened up 2026-06-25)
+WASHER_DEPTH_CLEARANCE = 2.0   # mm, depth leeway above the washer stack (bumped 0.3 -> 2.0
+                               # on 2026-06-25) so the foot pad seats on the riser top face
 
 COUNTERBORE_DIA = WASHER_OD + WASHER_DIA_CLEARANCE
 COUNTERBORE_DEPTH = NUM_WASHERS_PER_BOLT * WASHER_THICKNESS + WASHER_DEPTH_CLEARANCE
